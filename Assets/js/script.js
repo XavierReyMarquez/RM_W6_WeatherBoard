@@ -7,7 +7,7 @@ var forecastContainerEl = document.getElementById("forecast-container");
 
 var APIKey = "a1bcf4e8069e231bf20b7eda912b9747";
 
-var city = ["seattle"];
+var cities = [];
 
 // var queryURL =
 //   "https://api.openweathermap.org/data/2.5/weather?q=" +
@@ -19,15 +19,44 @@ var city = ["seattle"];
 //   .then((response) => response.json())
 //   .then((data) => console.log(data));
 
+var loadCities = function () {
+  var citiesLoaded = localStorage.getItem("cities");
+  if (!citiesLoaded) {
+    return false;
+  }
+
+  citiesLoaded = JSON.parse(citiesLoaded);
+
+  for (var i = 0; i < citiesLoaded.length; i++) {
+    displaySearchedCities(citiesLoaded[i]);
+    cities.push(citiesLoaded[i]);
+  }
+};
+
 var saveCities = function () {
   localStorage.setItem("cities", JSON.stringify(cities));
 };
 
-var displaySearched;
+var displaySearchedCities = function (city) {
+  var cardCityEl = document.createElement("div");
+  cardCityEl.setAttribute("class", "card");
+  var cityCardNameEl = document.createElement("div");
+  cityCardNameEl.setAttribute("class", "card-body searched-city");
+  cityCardNameEl.textContent = city;
 
-var getCurrentData = function (data, city) {
+  cardCityEl.appendChild(cityCardNameEl);
+  cardCityEl.appendChild(cityCardNameEl);
+
+  cardCityEl.addEventListener("click", function () {
+    getCityData(city);
+  });
+
+  searchHistoryEl.appendChild(cardCityEl);
+};
+
+var getCurrentData = function (city, data) {
   //end points
-  var tempCurrent = Math.round(data.current.temp);
+  var tempCurrent = data.current.temp;
   var windSpeed = Math.round(data.current.wind_speed);
   var humidity = data.current.humidity;
   var iconCurrent = data.current.weather[0].icon;
@@ -59,7 +88,7 @@ var getCurrentData = function (data, city) {
   var humitdityEl = document.createElement("p");
   var windSpeedEl = document.createElement("p");
   var uvIndexEl = document.createElement("p");
-  var uvIndexColorEl = document.createElement("p");
+  var uvIndexColorEl = document.createElement("span");
   uvIndexColorEl.textContent = uvIndex;
   //color for background of UVindex depending on severity
   if (uvIndex <= 4) {
@@ -71,7 +100,7 @@ var getCurrentData = function (data, city) {
   }
 
   //adding data to elements
-  tempEl.textContent("Temperature: " + tempCurrent + "°F");
+  tempEl.textContent = "Temperature: " + tempCurrent + "°F";
   humitdityEl.textContent = "Humidity: " + humidity + "%";
   windSpeedEl.textContent = "Wind Speed: " + windSpeed + " MPH";
   uvIndexEl.textContent = "UV Index: ";
@@ -97,15 +126,15 @@ var displayForecastData = function (data) {
     var humForecast = data.daily[i].humidity;
     var iconForecast = data.daily[i].weather[0].icon;
 
-    console.log(tempForecast);
-    console.log(windForecast);
-    console.log(humForecast);
-    console.log(iconForecast);
+    // console.log(tempForecast);
+    // console.log(windForecast);
+    // console.log(humForecast);
+    // console.log(iconForecast);
 
     var cardEl = document.createElement("div");
     cardEl.setAttribute(
       "class",
-      "card col-xl-2 col-md-5 col-sm-10 mx-3 my-2 bg-primary text-white text-center"
+      "card col-xl-2 col-md-5 col-sm-10 mx-3 my-2 bg-info text-white text-center"
     );
 
     var cardBodyEl = document.createElement("div");
@@ -149,7 +178,7 @@ var displayForecastData = function (data) {
 };
 
 var getCityData = function (city) {
-  //   event.preventDefault();
+  event.preventDefault();
 
   var cityInfoUrl =
     "https://api.openweathermap.org/data/2.5/weather?q=" +
@@ -166,8 +195,18 @@ var getCityData = function (city) {
         var latitude = data.coord.lat;
         var longitude = data.coord.lon;
 
+        var prevSearch = cities.includes(cityName);
+        if (!prevSearch) {
+          cities.push(cityName);
+          saveCities();
+          displaySearchedCities(cityName);
+        }
+
         getWeatherData(cityName, latitude, longitude);
       });
+    } else {
+      alert("city was not found!");
+      cityFormEl.reset();
     }
   });
 };
@@ -192,3 +231,10 @@ getWeatherData = function (city, latitude, longitude) {
     }
   });
 };
+
+loadCities();
+
+cityFormEl.addEventListener("submit", function () {
+  cityInput = cityInputEl.value;
+  getCityData(cityInput);
+});
