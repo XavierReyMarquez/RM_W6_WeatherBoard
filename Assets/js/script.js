@@ -26,8 +26,14 @@ var displayForecastData = function (data) {
 
   for (var i = 1; i < 6; i++) {
     var tempForecast = Math.round(data.daily[i].temp.day);
+    var windForecast = Math.round(data.daily[i].wind_speed);
+    var humForecast = data.daily[i].humidity;
+    var iconForecast = data.daily[i].weather[0].icon;
 
     console.log(tempForecast);
+    console.log(windForecast);
+    console.log(humForecast);
+    console.log(iconForecast);
 
     var cardEl = document.createElement("div");
     cardEl.setAttribute(
@@ -38,11 +44,35 @@ var displayForecastData = function (data) {
     var cardBodyEl = document.createElement("div");
     cardBodyEl.setAttribute("class", "card-body");
 
+    //create elements
+    var cardDateEl = document.createElement("h6");
+    cardDateEl.setAttribute("class", "card-text");
+    cardDateEl.textContent = moment(i, "days").format("L");
+
+    var cardIconEl = document.createElement("img");
+    cardIconEl.setAttribute(
+      "src",
+      "http://openweathermap.org/img/wn/" + iconForecast + "@2x.png"
+    );
+
     var cardTempEl = document.createElement("p");
     cardTempEl.setAttribute("class", "card-text");
     cardTempEl.textContent = "Temperature:  " + tempForecast + "°F";
 
+    var cardWindEl = document.createElement("p");
+    cardWindEl.setAttribute("class", "card-text");
+    cardWindEl.textContent = "Wind:  " + windForecast + "MPH";
+
+    var cardHumidEl = document.createElement("p");
+    cardHumidEl.setAttribute("class", "card-text");
+    cardHumidEl.textContent = "Humidity:  " + humForecast + "%";
+
+    //appending
+    cardBodyEl.appendChild(cardDateEl);
+    cardBodyEl.appendChild(cardIconEl);
     cardBodyEl.appendChild(cardTempEl);
+    cardBodyEl.appendChild(cardWindEl);
+    cardBodyEl.appendChild(cardHumidEl);
 
     cardEl.appendChild(cardBodyEl);
     forecastContainerEl.appendChild(cardEl);
