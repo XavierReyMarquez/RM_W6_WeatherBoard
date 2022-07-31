@@ -19,6 +19,73 @@ var city = ["seattle"];
 //   .then((response) => response.json())
 //   .then((data) => console.log(data));
 
+var saveCities = function () {
+  localStorage.setItem("cities", JSON.stringify(cities));
+};
+
+var displaySearched;
+
+var getCurrentData = function (data, city) {
+  //end points
+  var tempCurrent = Math.round(data.current.temp);
+  var windSpeed = Math.round(data.current.wind_speed);
+  var humidity = data.current.humidity;
+  var iconCurrent = data.current.weather[0].icon;
+  var uvIndex = data.current.uvi;
+
+  //creating HTML
+  currentContainerEl.textContent = "";
+  currentContainerEl.setAttribute("class", "m-3 border col-10 text-center");
+  var divCityHeader = document.createElement("div");
+  var headerCityDate = document.createElement("h2");
+  var currentDate = moment().format("L");
+  var imageIcon = document.createElement("img");
+  imageIcon.setAttribute("src", "");
+  imageIcon.setAttribute(
+    "src",
+    "http://openweathermap.org/img/wn/" + iconCurrent + "@2x.png"
+  );
+  headerCityDate.textContent = city + " (" + currentDate + ")";
+
+  //append to current container
+  divCityHeader.appendChild(headerCityDate);
+  divCityHeader.appendChild(imageIcon);
+  currentContainerEl.appendChild(divCityHeader);
+
+  //displaying weather data
+
+  var divCurrent = document.createElement("div");
+  var tempEl = document.createElement("p");
+  var humitdityEl = document.createElement("p");
+  var windSpeedEl = document.createElement("p");
+  var uvIndexEl = document.createElement("p");
+  var uvIndexColorEl = document.createElement("p");
+  uvIndexColorEl.textContent = uvIndex;
+  //color for background of UVindex depending on severity
+  if (uvIndex <= 4) {
+    uvIndexColorEl.setAttribute("class", "bg-success text-white p-2");
+  } else if (uvIndex <= 8) {
+    uvIndexColorEl.setAttribute("class", "bg-warning text-black p-2");
+  } else {
+    uvIndexColorEl.setAttribute("class", "bg-danger text-white p-2");
+  }
+
+  //adding data to elements
+  tempEl.textContent("Temperature: " + tempCurrent + "°F");
+  humitdityEl.textContent = "Humidity: " + humidity + "%";
+  windSpeedEl.textContent = "Wind Speed: " + windSpeed + " MPH";
+  uvIndexEl.textContent = "UV Index: ";
+  uvIndexEl.appendChild(uvIndexColorEl);
+
+  //appending
+  divCurrent.appendChild(tempEl);
+  divCurrent.appendChild(humitdityEl);
+  divCurrent.appendChild(windSpeedEl);
+  divCurrent.appendChild(uvIndexEl);
+
+  currentContainerEl.appendChild(divCurrent);
+};
+
 var displayForecastData = function (data) {
   forecastContainerEl.textContent = "";
   var forecastHeadEl = document.getElementById("five-day");
@@ -44,7 +111,7 @@ var displayForecastData = function (data) {
     var cardBodyEl = document.createElement("div");
     cardBodyEl.setAttribute("class", "card-body");
 
-    //create elements
+    //create HTML elements
     var cardDateEl = document.createElement("h6");
     cardDateEl.setAttribute("class", "card-text");
     cardDateEl.textContent = moment(i, "days").format("L");
@@ -120,9 +187,8 @@ getWeatherData = function (city, latitude, longitude) {
         console.log(data);
 
         displayForecastData(data);
+        getCurrentData(city, data);
       });
     }
   });
 };
-
-getCityData(city);
