@@ -9,16 +9,6 @@ var APIKey = "a1bcf4e8069e231bf20b7eda912b9747";
 
 var cities = [];
 
-// var queryURL =
-//   "https://api.openweathermap.org/data/2.5/weather?q=" +
-//   city +
-//   " &appid=" +
-//   APIKey;
-
-// fetch(queryURL)
-//   .then((response) => response.json())
-//   .then((data) => console.log(data));
-
 var loadCities = function () {
   var citiesLoaded = localStorage.getItem("cities");
   if (!citiesLoaded) {
