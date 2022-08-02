@@ -1,8 +1,25 @@
 .h1 {
   font-size: 36px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+.searched-city {
+  font-family: Georgia, "Times New Roman", Times, serif;
 }
 
 .searched-city:hover {
   cursor: pointer;
-  background-color: lightgrey;
+  background-color: gray;
+}
+
+#current-container {
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+#forecast-container {
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+#city-form {
+  font-family: Georgia, "Times New Roman", Times, serif;
 }
